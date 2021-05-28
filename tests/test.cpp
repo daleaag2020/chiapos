@@ -546,13 +546,14 @@ void PlotAndTestProofOfSpace(
     DiskPlotter plotter = DiskPlotter();
     uint8_t memo[5] = {1, 2, 3, 4, 5};
     plotter.CreatePlotDisk(
-        ".", ".", ".", filename, k, memo, 5, plot_id, 32, buffer, 0, stripe_size, num_threads);
+        ".", ".", ".", filename, k, memo, 5, plot_id, 32, buffer, 32, stripe_size, num_threads);
     TestProofOfSpace(filename, iterations, k, plot_id, num_proofs);
     REQUIRE(remove(filename.c_str()) == 0);
 }
 
 TEST_CASE("Plotting")
-{/*
+{
+    /*
     SECTION("Disk plot k18")
     {
         PlotAndTestProofOfSpace("cpp-test-plot.dat", 100, 18, plot_id_1, 11, 95, 4000, 2);
@@ -571,7 +572,7 @@ TEST_CASE("Plotting")
     }*/
     SECTION("Disk plot k21")
     {
-        PlotAndTestProofOfSpace("/cpp-test-plot.dat", 5000, 25, plot_id_3, 100, 4945, 8192, 4);
+        PlotAndTestProofOfSpace("/nvme/tmp/cpp-test-plot.dat", 5000, 26, plot_id_3, 8000, 4945, 8192, 2);
     }
     // SECTION("Disk plot k24") { PlotAndTestProofOfSpace("cpp-test-plot.dat", 100, 24, plot_id_3,
     // 100, 107); }
@@ -1023,5 +1024,7 @@ TEST_CASE("FilteredDisk")
         FilteredDisk fd(std::move(bd), std::move(filter), 4);
     }
 */
-    //remove("test_file.bin");
-//}
+/*
+    remove("test_file.bin");
+}
+*/

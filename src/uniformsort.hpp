@@ -80,8 +80,8 @@ namespace UniformSort {
 
         // The number of buckets needed (the smallest power of 2 greater than 2 * num_entries).
         while ((1ULL << bucket_length) < 2 * num_entries) bucket_length++;
-        bitfield is_used(rounded_entries);
-
+        //bitfield is_used(rounded_entries);
+        std::vector<bool> used_bitmap(rounded_entries);
         int fd = input_disk.fd;
         uint64_t completed_entries = 0;
         uint64_t queued_entries = 0;
@@ -151,6 +151,7 @@ namespace UniformSort {
                 // free the cqe
                 io_uring_cqe_seen(&ring, cqe);
 
+
                 for (uint64_t entry_num = 0; entry_num < entry_count; entry_num++) {
                     // First unique bits in the entry give the expected position of it in the sorted array.
                     // We take 'bucket_length' bits starting with the first unique one.
@@ -159,7 +160,7 @@ namespace UniformSort {
                     uint64_t mem_ofs = idx * entry_len;
 
                     // As long as position is occupied by a previous entry...
-                    while (is_used.get(idx) && idx < rounded_entries) {
+                    while (used_bitmap[idx] && idx < rounded_entries) {
                         if (Util::MemCmpBits(
                             memory + mem_ofs, buffer + buf_ofs, entry_len, start_byte, mask) > 0) {
                                 // Swap memory and buffer using temporary space
@@ -171,8 +172,8 @@ namespace UniformSort {
                             mem_ofs += entry_len;
                     }
 
+                    used_bitmap[idx] = true;
                     memcpy(memory + mem_ofs, buffer + buf_ofs, entry_len);
-                    is_used.set(idx);
                     completed_entries++;
                 }
 
@@ -185,7 +186,7 @@ namespace UniformSort {
         // Search the memory buffer for occupied entries.
         for (uint64_t idx = 0, mem_ofs = 0; entries_written < num_entries && idx < rounded_entries;
               idx++, mem_ofs += entry_len) {
-             if (is_used.get(idx)) {
+             if (used_bitmap[idx]) {
                 // We've found an entry.
                 // write the stored entry itself.
                 memcpy(
