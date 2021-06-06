@@ -394,7 +394,7 @@ public:
                                   << final_tmp_2_filename << std::endl;
                         bRenamed = true;
                            }
-                     }
+                }
                      if (bRenamed && (!bCopied)){
                         fs::copy(
                             final_tmp_2_filename, final_filename, fs::copy_options::overwrite_existing, ec);
