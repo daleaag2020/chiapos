@@ -411,8 +411,8 @@ public:
                         bool removed_2 = fs::remove(final_tmp_2_filename);
                         std::cout << "Removed temp2 file " << final_tmp_2_filename << "? " << removed_2
                                   << std::endl;
-                           }
-                     }
+                         }
+                   }
                 }       
 
             if (!bCopied) {
